@@ -31,15 +31,26 @@ function fmtUm(v: number) {
 }
 
 function IsoFitPage() {
-  const [diameter, setDiameter] = useState<string>("");
+  const [diameter, setDiameter] = useState<string>("50");
   const [fit, setFit] = useState<FitType>("Clearance");
   const [hole, setHole] = useState<HoleCode>("H7");
   const [shaft, setShaft] = useState<ShaftCode>("g6");
-  const [result, setResult] = useState<FitResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   const validShafts = useMemo(() => SHAFTS_BY_FIT[fit], [fit]);
+
+  // Live computation — recalculates on every input change.
+  const computed = useMemo(() => {
+    const d = parseFloat(diameter);
+    if (!isFinite(d) || d <= 0) {
+      return { result: null as FitResult | null, error: "Enter a nominal diameter to begin." };
+    }
+    const out = calculateFit(d, hole, shaft);
+    if ("error" in out) return { result: null as FitResult | null, error: out.error };
+    return { result: out, error: null as string | null };
+  }, [diameter, hole, shaft]);
+
+  const { result, error } = computed;
 
   function onFitChange(f: FitType) {
     setFit(f);
@@ -48,18 +59,7 @@ function IsoFitPage() {
   }
 
   function onCalculate() {
-    const d = parseFloat(diameter);
-    const out = calculateFit(d, hole, shaft);
-    if ("error" in out) {
-      setError(out.error);
-      setResult(null);
-      return;
-    }
-    setError(null);
-    setResult(out);
-    setTimeout(() => {
-      resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 50);
+    resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   return (
@@ -96,112 +96,123 @@ function IsoFitPage() {
           01 / CALCULATOR
         </h2>
 
-        <div className="space-y-8">
-          <Field label="NOMINAL DIAMETER (MM)">
-            <input
-              type="number"
-              inputMode="decimal"
-              step="any"
-              value={diameter}
-              onChange={(e) => setDiameter(e.target.value)}
-              placeholder="e.g. 50"
-              className="w-full bg-transparent border-b border-[rgba(225,225,225,0.3)] py-3 font-mono text-2xl sm:text-3xl outline-none focus:border-[#E1E1E1] placeholder:text-[rgba(225,225,225,0.25)]"
-            />
-          </Field>
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-12 lg:gap-16">
+          <div className="space-y-8">
+            <Field label="NOMINAL DIAMETER (MM)">
+              <input
+                type="number"
+                inputMode="decimal"
+                step="any"
+                value={diameter}
+                onChange={(e) => setDiameter(e.target.value)}
+                placeholder="e.g. 50"
+                className="w-full bg-transparent border-b border-[rgba(225,225,225,0.3)] py-3 font-mono text-2xl sm:text-3xl outline-none focus:border-[#E1E1E1] placeholder:text-[rgba(225,225,225,0.25)]"
+              />
+            </Field>
 
-          <Field label="FIT TYPE">
-            <Select
-              value={fit}
-              onChange={(v) => onFitChange(v as FitType)}
-              options={["Clearance", "Transition", "Interference"]}
-            />
-          </Field>
+            <Field label="FIT TYPE">
+              <Select
+                value={fit}
+                onChange={(v) => onFitChange(v as FitType)}
+                options={["Clearance", "Transition", "Interference"]}
+              />
+            </Field>
 
-          <Field label="HOLE TOLERANCE">
-            <Select
-              value={hole}
-              onChange={(v) => setHole(v as HoleCode)}
-              options={HOLE_CODES as unknown as string[]}
-            />
-          </Field>
+            <Field label="HOLE TOLERANCE">
+              <Select
+                value={hole}
+                onChange={(v) => setHole(v as HoleCode)}
+                options={HOLE_CODES as unknown as string[]}
+              />
+            </Field>
 
-          <Field label="SHAFT TOLERANCE">
-            <Select
-              value={shaft}
-              onChange={(v) => setShaft(v as ShaftCode)}
-              options={validShafts as unknown as string[]}
-            />
-          </Field>
+            <Field label="SHAFT TOLERANCE">
+              <Select
+                value={shaft}
+                onChange={(v) => setShaft(v as ShaftCode)}
+                options={validShafts as unknown as string[]}
+              />
+            </Field>
 
-          <button
-            onClick={onCalculate}
-            className="w-full bg-[#E1E1E1] text-[#1E1E1E] py-5 font-sans font-semibold tracking-[0.2em] uppercase text-sm hover:bg-[#D2042D] hover:text-[#E1E1E1] transition-colors"
-          >
-            CALCULATE
-          </button>
+            <button
+              onClick={onCalculate}
+              className="w-full bg-[#E1E1E1] text-[#1E1E1E] py-5 font-sans font-semibold tracking-[0.2em] uppercase text-sm hover:bg-[#D2042D] hover:text-[#E1E1E1] transition-colors"
+            >
+              CALCULATE
+            </button>
 
-          <p className="font-mono text-[10px] tracking-[0.1em] uppercase text-[rgba(225,225,225,0.45)]">
-            REFERENCE VALUES PER ISO 286-1. VERIFY AGAINST CURRENT STANDARD FOR PRODUCTION USE.
-          </p>
+            <p className="font-mono text-[10px] tracking-[0.1em] uppercase text-[rgba(225,225,225,0.45)]">
+              REFERENCE VALUES PER ISO 286-1. VERIFY AGAINST CURRENT STANDARD FOR PRODUCTION USE.
+            </p>
+          </div>
+
+          {/* Live diagram — updates as inputs change */}
+          <div className="lg:sticky lg:top-6 self-start w-full">
+            <div className="flex items-center justify-between mb-4">
+              <div className={LABEL}>LIVE TOLERANCE BAND · {hole}/{shaft}</div>
+              {result && (
+                <div className="font-mono text-[10px] tracking-[0.15em] uppercase text-[#D2042D]">
+                  {result.category}
+                </div>
+              )}
+            </div>
+            <div className="border border-[rgba(225,225,225,0.3)] p-4 sm:p-6 min-h-[280px] flex items-center justify-center">
+              {result ? (
+                <FitDiagram r={result} />
+              ) : (
+                <p className="font-mono text-[11px] tracking-[0.15em] uppercase text-[rgba(225,225,225,0.45)] text-center">
+                  {error}
+                </p>
+              )}
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Results */}
-      {(result || error) && (
-        <>
-          <div className={HAIRLINE} />
-          <section ref={resultsRef} className="mx-auto max-w-5xl px-5 py-12 sm:py-16 animate-fade-in">
-            <h2 className={`${HEADER} text-xs mb-10 text-[rgba(225,225,225,0.6)]`}>
-              02 / RESULTS
-            </h2>
+      <div className={HAIRLINE} />
+      <section ref={resultsRef} className="mx-auto max-w-5xl px-5 py-12 sm:py-16">
+        <h2 className={`${HEADER} text-xs mb-10 text-[rgba(225,225,225,0.6)]`}>
+          02 / RESULTS
+        </h2>
 
-            {error && (
-              <p className="font-mono text-sm text-[#D2042D]">{error}</p>
-            )}
+        {error && !result && (
+          <p className="font-mono text-sm text-[rgba(225,225,225,0.6)]">{error}</p>
+        )}
 
-            {result && (
-              <div className="divide-y divide-[rgba(225,225,225,0.3)]">
-                <ResultRow label="DIAMETER RANGE" value={result.rangeLabel} />
-                <ResultBlock label="HOLE TOLERANCE">
-                  <DevPair upMm={result.holeUpper} loMm={result.holeLower} upUm={result.holeUpperUm} loUm={result.holeLowerUm} />
-                </ResultBlock>
-                <ResultBlock label="SHAFT TOLERANCE">
-                  <DevPair upMm={result.shaftUpper} loMm={result.shaftLower} upUm={result.shaftUpperUm} loUm={result.shaftLowerUm} />
-                </ResultBlock>
-                <ResultRow
-                  label={result.maxClearance >= 0 ? "MAXIMUM CLEARANCE" : "MAXIMUM INTERFERENCE"}
-                  value={fmtMm(result.maxClearance)}
-                />
-                <ResultRow
-                  label={result.minClearance >= 0 ? "MINIMUM CLEARANCE" : "MINIMUM INTERFERENCE"}
-                  value={fmtMm(result.minClearance)}
-                />
-                <div className="py-6">
-                  <div className={LABEL}>FIT CLASSIFICATION</div>
-                  <div className="mt-3 font-sans font-bold tracking-[0.1em] uppercase text-xl sm:text-2xl text-[#D2042D]">
-                    {result.classification}
-                  </div>
-                </div>
-                <div className="py-6">
-                  <div className={LABEL}>USE CASE</div>
-                  <p className="mt-3 text-sm sm:text-base text-[rgba(225,225,225,0.85)] leading-relaxed">
-                    {result.useCase}
-                  </p>
-                </div>
+        {result && (
+          <div className="divide-y divide-[rgba(225,225,225,0.3)]">
+            <ResultRow label="DIAMETER RANGE" value={result.rangeLabel} />
+            <ResultBlock label={`HOLE TOLERANCE · ${hole}`}>
+              <DevPair upMm={result.holeUpper} loMm={result.holeLower} upUm={result.holeUpperUm} loUm={result.holeLowerUm} />
+            </ResultBlock>
+            <ResultBlock label={`SHAFT TOLERANCE · ${shaft}`}>
+              <DevPair upMm={result.shaftUpper} loMm={result.shaftLower} upUm={result.shaftUpperUm} loUm={result.shaftLowerUm} />
+            </ResultBlock>
+            <ResultRow
+              label={result.maxClearance >= 0 ? "MAXIMUM CLEARANCE" : "MAXIMUM INTERFERENCE"}
+              value={fmtMm(result.maxClearance)}
+            />
+            <ResultRow
+              label={result.minClearance >= 0 ? "MINIMUM CLEARANCE" : "MINIMUM INTERFERENCE"}
+              value={fmtMm(result.minClearance)}
+            />
+            <div className="py-6">
+              <div className={LABEL}>FIT CLASSIFICATION</div>
+              <div className="mt-3 font-sans font-bold tracking-[0.1em] uppercase text-xl sm:text-2xl text-[#D2042D]">
+                {result.category} — {result.classification}
               </div>
-            )}
+            </div>
+            <div className="py-6">
+              <div className={LABEL}>USE CASE</div>
+              <p className="mt-3 text-sm sm:text-base text-[rgba(225,225,225,0.85)] leading-relaxed">
+                {result.useCase}
+              </p>
+            </div>
+          </div>
+        )}
+      </section>
 
-            {result && (
-              <div className="mt-12">
-                <div className={LABEL}>TOLERANCE BAND DIAGRAM</div>
-                <div className="mt-4 border border-[rgba(225,225,225,0.3)] p-5 sm:p-8">
-                  <FitDiagram r={result} />
-                </div>
-              </div>
-            )}
-          </section>
-        </>
-      )}
 
       {/* CTA */}
       <div className={HAIRLINE} />

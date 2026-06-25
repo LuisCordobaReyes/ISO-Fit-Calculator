@@ -93,9 +93,27 @@ export interface FitResult {
   shaftLowerUm: number;
   maxClearance: number; // mm (positive = clearance, negative = interference)
   minClearance: number;
+  category: "CLEARANCE FIT" | "TRANSITION FIT" | "INTERFERENCE FIT";
   classification: string;
   useCase: string;
 }
+
+// Specific H/shaft combination use cases.
+const COMBO_USE_CASES: Record<string, string> = {
+  "H7/e7": "Loose running fit — large clearance, dirty environments, high heat.",
+  "H7/f7": "Close running fit — accurate running on machines, moderate speeds and pressures.",
+  "H7/g6": "Running fit — sliding shafts, guides, gears.",
+  "H7/h6": "Sliding fit — locating parts that move freely, hand-assembled.",
+  "H7/j6": "Locational transition — accurate, hand-pressed, easily disassembled.",
+  "H7/k6": "Light press fit — locating with light pressure, mallet assembly.",
+  "H7/m6": "Medium drive fit — tighter location, press assembly.",
+  "H7/n6": "Tight transition — press fit, suitable for permanent assembly with force.",
+  "H7/p6": "Press fit — permanent assembly, requires arbor press.",
+  "H7/r6": "Medium drive / shrink fit — heavy interference, light shrink for steel.",
+  "H7/s6": "Heavy press fit — shrink fit, permanent assembly for steel parts.",
+  "H7/t6": "Force fit — heavy shrink, practical limit of steel-on-steel interference.",
+  "H7/u6": "Heavy shrink fit — maximum interference, high assembly stresses.",
+};
 
 export function calculateFit(
   diameter: number,
@@ -104,6 +122,10 @@ export function calculateFit(
 ): FitResult | { error: string } {
   const idx = findRangeIndex(diameter);
   if (idx < 0) return { error: "Diameter out of supported range (0–500 mm)." };
+
+  if (shaft === "t6" && diameter <= 18) {
+    return { error: "Shaft t6 is only defined for diameters above 18 mm." };
+  }
 
   const holeGrade = ("IT" + hole.slice(1)) as keyof typeof IT;
   const holeIT = IT[holeGrade][idx];
@@ -124,10 +146,6 @@ export function calculateFit(
     shaftUpperUm = fd + shaftIT;
   }
 
-  if (shaft === "t6" && diameter <= 18) {
-    return { error: "Shaft t6 is only defined for diameters above 18 mm." };
-  }
-
   const holeUpper = holeUpperUm / 1000;
   const holeLower = holeLowerUm / 1000;
   const shaftUpper = shaftUpperUm / 1000;
@@ -137,14 +155,22 @@ export function calculateFit(
   const maxClearance = holeUpper - shaftLower;
   const minClearance = holeLower - shaftUpper;
 
+  let category: FitResult["category"];
+  if (minClearance >= 0 && maxClearance >= 0) category = "CLEARANCE FIT";
+  else if (minClearance <= 0 && maxClearance <= 0) category = "INTERFERENCE FIT";
+  else category = "TRANSITION FIT";
+
   const info = FIT_DESCRIPTIONS[shaft];
+  const key = `${hole}/${shaft}`;
+  const useCase = COMBO_USE_CASES[key] ?? info.use;
 
   return {
     rangeLabel: RANGE_LABELS[idx],
     holeUpper, holeLower, holeUpperUm, holeLowerUm,
     shaftUpper, shaftLower, shaftUpperUm, shaftLowerUm,
     maxClearance, minClearance,
+    category,
     classification: info.name,
-    useCase: info.use,
+    useCase,
   };
 }
