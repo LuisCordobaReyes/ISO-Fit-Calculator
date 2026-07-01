@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
 import {
   HOLE_CODES, SHAFTS_BY_FIT, calculateFit,
@@ -67,10 +67,11 @@ function IsoFitPage() {
       {/* Top bar */}
       <header className={`border-b border-[rgba(225,225,225,0.3)]`}>
         <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
-          <span className="font-mono text-xs tracking-[0.2em] uppercase">DATUM</span>
-          <a href="#" className="font-mono text-[11px] tracking-[0.15em] uppercase text-[rgba(225,225,225,0.8)] hover:text-[#D2042D]">
-            GET THE FULL GD&amp;T GUIDE →
-          </a>
+          <Link to="/" className="font-mono text-xs tracking-[0.2em] uppercase hover:text-[#D2042D]">DATUM</Link>
+          <nav className="flex items-center gap-6">
+            <Link to="/" className="font-mono text-[11px] tracking-[0.15em] uppercase text-[#D2042D]">ISO FIT</Link>
+            <Link to="/press-fit" className="font-mono text-[11px] tracking-[0.15em] uppercase text-[rgba(225,225,225,0.8)] hover:text-[#D2042D]">PRESS FIT</Link>
+          </nav>
         </div>
       </header>
 
