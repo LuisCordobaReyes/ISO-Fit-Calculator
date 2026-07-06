@@ -4,6 +4,7 @@ import {
   MATERIALS, MATERIAL_KEYS, FRICTION_PRESETS,
   calculatePressFit, type PressFitResult,
 } from "@/lib/press-fit";
+import nomadLogo from "@/assets/nomad-logo.png.asset.json";
 
 export const Route = createFileRoute("/press-fit")({
   head: () => ({
