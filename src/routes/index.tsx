@@ -76,11 +76,12 @@ function IsoFitPage() {
       </header>
 
       {/* Hero */}
-      <section className="mx-auto max-w-5xl px-5 pt-16 pb-12 sm:pt-24 sm:pb-20">
-        <h1 className="font-sans font-bold tracking-[0.05em] uppercase text-[68px] leading-[0.95] sm:text-[140px]">
+      <section className="relative mx-auto max-w-5xl px-5 pt-16 pb-12 sm:pt-24 sm:pb-20 overflow-hidden">
+        <TopographyLines />
+        <h1 className="relative font-sans font-bold tracking-[0.05em] uppercase text-[68px] leading-[0.95] sm:text-[140px]">
           ISO FIT
         </h1>
-        <p className={`${HEADER} mt-6 text-sm sm:text-base text-[rgba(225,225,225,0.85)]`}>
+        <p className={`${HEADER} relative mt-6 text-sm sm:text-base text-[rgba(225,225,225,0.85)]`}>
           TOLERANCE AND FIT CALCULATOR FOR ENGINEERS.
         </p>
       </section>
