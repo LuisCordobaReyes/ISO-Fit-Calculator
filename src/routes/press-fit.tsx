@@ -4,6 +4,7 @@ import {
   MATERIALS, MATERIAL_KEYS, FRICTION_PRESETS,
   calculatePressFit, type PressFitResult,
 } from "@/lib/press-fit";
+import nomadLogo from "@/assets/nomad-logo.png.asset.json";
 
 export const Route = createFileRoute("/press-fit")({
   head: () => ({
@@ -70,7 +71,10 @@ function PressFitPage() {
       {/* Top bar */}
       <header className="border-b border-[rgba(225,225,225,0.3)]">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
-          <Link to="/" className="font-mono text-xs tracking-[0.2em] uppercase hover:text-[#D2042D]">DATUM</Link>
+          <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <img src={nomadLogo.url} alt="Nomad Industries" className="h-8 w-8 object-contain" />
+            <span className="font-mono text-xs tracking-[0.2em] uppercase">DATUM</span>
+          </Link>
           <nav className="flex items-center gap-6">
             <Link to="/" className="font-mono text-[11px] tracking-[0.15em] uppercase text-[rgba(225,225,225,0.8)] hover:text-[#D2042D]">ISO FIT</Link>
             <Link to="/press-fit" className="font-mono text-[11px] tracking-[0.15em] uppercase text-[#D2042D]">PRESS FIT</Link>
