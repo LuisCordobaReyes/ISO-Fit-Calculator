@@ -4,6 +4,7 @@ import {
   HOLE_CODES, SHAFTS_BY_FIT, calculateFit,
   type FitType, type HoleCode, type ShaftCode, type FitResult,
 } from "@/lib/iso-fit";
+import nomadLogo from "@/assets/nomad-logo.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
