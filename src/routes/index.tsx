@@ -76,11 +76,12 @@ function IsoFitPage() {
       </header>
 
       {/* Hero */}
-      <section className="mx-auto max-w-5xl px-5 pt-16 pb-12 sm:pt-24 sm:pb-20">
-        <h1 className="font-sans font-bold tracking-[0.05em] uppercase text-[68px] leading-[0.95] sm:text-[140px]">
+      <section className="relative mx-auto max-w-5xl px-5 pt-16 pb-12 sm:pt-24 sm:pb-20 overflow-hidden">
+        <TopographyLines />
+        <h1 className="relative font-sans font-bold tracking-[0.05em] uppercase text-[68px] leading-[0.95] sm:text-[140px]">
           ISO FIT
         </h1>
-        <p className={`${HEADER} mt-6 text-sm sm:text-base text-[rgba(225,225,225,0.85)]`}>
+        <p className={`${HEADER} relative mt-6 text-sm sm:text-base text-[rgba(225,225,225,0.85)]`}>
           TOLERANCE AND FIT CALCULATOR FOR ENGINEERS.
         </p>
       </section>
@@ -272,6 +273,39 @@ function IsoFitPage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+function TopographyLines() {
+  // Concentric distorted contour lines evoking a topographic map / tolerance field.
+  const W = 1200, H = 400;
+  const cx = W * 0.75, cy = H * 0.55;
+  const rings = Array.from({ length: 14 }, (_, i) => {
+    const r = 30 + i * 40;
+    const squish = 0.55 + (i % 3) * 0.05;
+    const rot = (i * 7) % 30;
+    return { rx: r, ry: r * squish, rot };
+  });
+  return (
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      preserveAspectRatio="xMidYMid slice"
+      className="pointer-events-none absolute inset-0 w-full h-full"
+      aria-hidden="true"
+    >
+      <g fill="none" stroke="rgba(225,225,225,0.12)" strokeWidth={1}>
+        {rings.map((r, i) => (
+          <ellipse
+            key={i}
+            cx={cx}
+            cy={cy}
+            rx={r.rx}
+            ry={r.ry}
+            transform={`rotate(${r.rot} ${cx} ${cy})`}
+          />
+        ))}
+      </g>
+    </svg>
   );
 }
 
