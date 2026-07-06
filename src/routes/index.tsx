@@ -83,10 +83,6 @@ function IsoFitPage() {
         <p className={`${HEADER} mt-6 text-sm sm:text-base text-[rgba(225,225,225,0.85)]`}>
           TOLERANCE AND FIT CALCULATOR FOR ENGINEERS.
         </p>
-        <p className="mt-6 max-w-xl text-sm sm:text-base leading-relaxed text-[rgba(225,225,225,0.7)]">
-          Pick your diameter, choose your fit, get instant ISO 286 tolerance values.
-          No ads, no signup, no garbage.
-        </p>
       </section>
 
       <div className={HAIRLINE} />
@@ -348,7 +344,7 @@ function FitDiagram({ r }: { r: FitResult }) {
   // Visualize tolerance bands in microns relative to nominal (zero line).
   const values = [r.holeUpperUm, r.holeLowerUm, r.shaftUpperUm, r.shaftLowerUm, 0];
   const maxAbs = Math.max(...values.map((v) => Math.abs(v)), 10);
-  const W = 600, H = 280, padX = 60, padY = 40;
+  const W = 640, H = 280, padX = 70, padY = 44;
   const innerW = W - padX * 2;
   const innerH = H - padY * 2;
   const midY = H / 2;
@@ -360,37 +356,38 @@ function FitDiagram({ r }: { r: FitResult }) {
   const shaftY1 = y(r.shaftUpperUm);
   const shaftY2 = y(r.shaftLowerUm);
 
-  const barX = padX + innerW * 0.25;
-  const barW = innerW * 0.2;
+  const barX = padX + innerW * 0.2;
+  const barW = innerW * 0.18;
   const shaftX = padX + innerW * 0.55;
+  const gapMid = (barX + barW + shaftX) / 2;
 
-  // Overlap zone (between shaft & hole) for interference highlight
-  const overlapTop = Math.max(holeY1, shaftY1); // smaller y is higher; max y = lower point
+  const overlapTop = Math.max(holeY1, shaftY1);
   const overlapBot = Math.min(holeY2, shaftY2);
-  const hasOverlap = r.maxClearance < 0; // interference
+  const hasOverlap = r.maxClearance < 0;
 
   const stroke = "#E1E1E1";
   const muted = "rgba(225,225,225,0.45)";
+  const labelOffset = 12;
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" preserveAspectRatio="xMidYMid meet">
       {/* zero / nominal axis */}
       <line x1={padX} y1={midY} x2={W - padX} y2={midY} stroke={stroke} strokeWidth={1} />
-      <text x={padX} y={midY - 6} fill={muted} fontFamily="IBM Plex Mono" fontSize="10" letterSpacing="1.5">
+      <text x={padX} y={midY - 8} fill={muted} fontFamily="IBM Plex Mono" fontSize="10" letterSpacing="1.5">
         NOMINAL Ø {r.rangeLabel}
       </text>
 
       {/* Hole band */}
       <rect x={barX} y={Math.min(holeY1, holeY2)} width={barW} height={Math.abs(holeY2 - holeY1)} fill="none" stroke={stroke} strokeWidth={1.5} />
       <text x={barX + barW / 2} y={Math.min(holeY1, holeY2) - 10} fill={stroke} fontFamily="IBM Plex Sans" fontSize="11" fontWeight={600} textAnchor="middle" letterSpacing="1.5">HOLE</text>
-      <text x={barX - 8} y={holeY1 + 4} fill={muted} fontFamily="IBM Plex Mono" fontSize="10" textAnchor="end">{r.holeUpperUm >= 0 ? "+" : "−"}{Math.abs(r.holeUpperUm)} µm</text>
-      <text x={barX - 8} y={holeY2 + 4} fill={muted} fontFamily="IBM Plex Mono" fontSize="10" textAnchor="end">{r.holeLowerUm >= 0 ? "+" : "−"}{Math.abs(r.holeLowerUm)} µm</text>
+      <text x={barX - labelOffset} y={holeY1 + 4} fill={muted} fontFamily="IBM Plex Mono" fontSize="10" textAnchor="end">{r.holeUpperUm >= 0 ? "+" : "−"}{Math.abs(r.holeUpperUm)} µm</text>
+      <text x={barX - labelOffset} y={holeY2 + 4} fill={muted} fontFamily="IBM Plex Mono" fontSize="10" textAnchor="end">{r.holeLowerUm >= 0 ? "+" : "−"}{Math.abs(r.holeLowerUm)} µm</text>
 
       {/* Shaft band */}
       <rect x={shaftX} y={Math.min(shaftY1, shaftY2)} width={barW} height={Math.abs(shaftY2 - shaftY1)} fill="none" stroke={stroke} strokeWidth={1.5} />
-      <text x={shaftX + barW / 2} y={Math.max(shaftY1, shaftY2) + 18} fill={stroke} fontFamily="IBM Plex Sans" fontSize="11" fontWeight={600} textAnchor="middle" letterSpacing="1.5">SHAFT</text>
-      <text x={shaftX + barW + 8} y={shaftY1 + 4} fill={muted} fontFamily="IBM Plex Mono" fontSize="10">{r.shaftUpperUm >= 0 ? "+" : "−"}{Math.abs(r.shaftUpperUm)} µm</text>
-      <text x={shaftX + barW + 8} y={shaftY2 + 4} fill={muted} fontFamily="IBM Plex Mono" fontSize="10">{r.shaftLowerUm >= 0 ? "+" : "−"}{Math.abs(r.shaftLowerUm)} µm</text>
+      <text x={shaftX + barW / 2} y={Math.min(shaftY1, shaftY2) - 10} fill={stroke} fontFamily="IBM Plex Sans" fontSize="11" fontWeight={600} textAnchor="middle" letterSpacing="1.5">SHAFT</text>
+      <text x={shaftX - labelOffset} y={shaftY1 + 4} fill={muted} fontFamily="IBM Plex Mono" fontSize="10" textAnchor="end">{r.shaftUpperUm >= 0 ? "+" : "−"}{Math.abs(r.shaftUpperUm)} µm</text>
+      <text x={shaftX - labelOffset} y={shaftY2 + 4} fill={muted} fontFamily="IBM Plex Mono" fontSize="10" textAnchor="end">{r.shaftLowerUm >= 0 ? "+" : "−"}{Math.abs(r.shaftLowerUm)} µm</text>
 
       {/* Clearance / interference indicator between bars */}
       {hasOverlap ? (
@@ -403,21 +400,18 @@ function FitDiagram({ r }: { r: FitResult }) {
           opacity={0.85}
         />
       ) : (
-        <>
-          {/* Gap zone between hole lower and shaft upper */}
-          <rect
-            x={barX + barW}
-            y={Math.min(holeY2, shaftY1)}
-            width={shaftX - (barX + barW)}
-            height={Math.max(2, Math.abs(holeY2 - shaftY1))}
-            fill="#D2042D"
-            opacity={0.85}
-          />
-        </>
+        <rect
+          x={barX + barW}
+          y={Math.min(holeY2, shaftY1)}
+          width={shaftX - (barX + barW)}
+          height={Math.max(2, Math.abs(holeY2 - shaftY1))}
+          fill="#D2042D"
+          opacity={0.85}
+        />
       )}
       <text
-        x={(barX + barW + shaftX) / 2}
-        y={H - 14}
+        x={gapMid}
+        y={H - 18}
         fill="#D2042D"
         fontFamily="IBM Plex Mono"
         fontSize="11"
