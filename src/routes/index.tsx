@@ -83,10 +83,6 @@ function IsoFitPage() {
         <p className={`${HEADER} mt-6 text-sm sm:text-base text-[rgba(225,225,225,0.85)]`}>
           TOLERANCE AND FIT CALCULATOR FOR ENGINEERS.
         </p>
-        <p className="mt-6 max-w-xl text-sm sm:text-base leading-relaxed text-[rgba(225,225,225,0.7)]">
-          Pick your diameter, choose your fit, get instant ISO 286 tolerance values.
-          No ads, no signup, no garbage.
-        </p>
       </section>
 
       <div className={HAIRLINE} />
