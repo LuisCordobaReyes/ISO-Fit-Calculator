@@ -215,7 +215,6 @@ function IsoFitPage() {
         )}
       </section>
 
-
       <div className={HAIRLINE} />
       <section className="mx-auto max-w-5xl px-5 py-16 sm:py-24">
         <h3 className={`${HEADER} text-lg sm:text-xl`}>
