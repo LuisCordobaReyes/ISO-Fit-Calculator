@@ -215,29 +215,6 @@ function IsoFitPage() {
         )}
       </section>
 
-
-      {/* CTA */}
-      <div className={HAIRLINE} />
-      <section className="mx-auto max-w-5xl px-5 py-16 sm:py-24">
-        <div className="border border-[rgba(225,225,225,0.3)] p-8 sm:p-12 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0">
-            <h3 className={`${HEADER} text-xl sm:text-2xl`}>
-              ENGINEERS USE DATUM TO LEVEL UP.
-            </h3>
-            <p className="mt-3 text-sm sm:text-base text-[rgba(225,225,225,0.7)] max-w-xl">
-              Get the full GD&amp;T Field Guide — every symbol, every modifier, every use case.
-            </p>
-          </div>
-          <a
-            href="#"
-            className="shrink-0 inline-block bg-[#E1E1E1] text-[#1E1E1E] px-8 py-4 font-sans font-semibold tracking-[0.2em] uppercase text-xs hover:bg-[#D2042D] hover:text-[#E1E1E1] transition-colors"
-          >
-            GET THE GUIDE →
-          </a>
-        </div>
-      </section>
-
-      {/* Newsletter */}
       <div className={HAIRLINE} />
       <section className="mx-auto max-w-5xl px-5 py-16 sm:py-24">
         <h3 className={`${HEADER} text-lg sm:text-xl`}>
