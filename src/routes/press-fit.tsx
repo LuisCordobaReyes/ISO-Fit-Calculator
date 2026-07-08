@@ -189,14 +189,29 @@ function PressFitPage() {
             )}
 
             {/* Formula reference */}
-            <div className="mt-16">
-              <div className={LABEL}>FORMULAS USED</div>
-              <div className="mt-4 font-mono text-xs sm:text-sm leading-relaxed text-[rgba(225,225,225,0.75)] space-y-2">
+            <div className="mt-16 border border-[rgba(225,225,225,0.3)] p-6 sm:p-8">
+              <div className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#D2042D]">
+                FORMULAS USED
+              </div>
+              <p className="mt-4 text-sm leading-relaxed text-[rgba(225,225,225,0.8)] max-w-2xl">
+                Interference press fits are modeled as two concentric thick-walled cylinders in
+                elastic contact. The <strong className="text-[#E1E1E1]">Lamé equations</strong> give
+                the radial and hoop stress distribution through a pressurized cylinder wall — the
+                right tool whenever the wall thickness is not small compared to the diameter, which
+                is nearly always true for a shaft-in-hub joint. Solving Lamé for the pressure that
+                produces the specified diametral interference gives contact pressure <em>p</em>;
+                everything else — holding force, transmissible torque, hub bore stress, and the
+                temperature change needed for a shrink or freeze fit — follows directly from
+                <em> p</em>, the friction coefficient <em>μ</em>, and the material's thermal
+                expansion coefficient <em>α</em>. This is the same closed-form model used in
+                Shigley, Roark, and Fictiv's press-fit spreadsheet.
+              </p>
+              <div className="mt-6 pt-6 border-t border-[rgba(225,225,225,0.2)] font-mono text-xs sm:text-sm leading-relaxed text-[rgba(225,225,225,0.85)] space-y-2 overflow-x-auto">
                 <div>p = δ / ( d · [ ((D²+d²)/(D²−d²) + ν_h)/E_h + ((d²+di²)/(d²−di²) − ν_s)/E_s ] )</div>
                 <div>F_assembly = μ · p · π · d · L</div>
-                <div>T_capacity = μ · p · π · d² · L / 2</div>
-                <div>σ_hoop,hub = p · (D²+d²)/(D²−d²)</div>
-                <div>ΔT = (δ + slip clearance) / (α · d)</div>
+                <div>T_capacity  = μ · p · π · d² · L / 2</div>
+                <div>σ_hoop,hub  = p · (D²+d²)/(D²−d²)</div>
+                <div>ΔT          = (δ + slip clearance) / (α · d)</div>
               </div>
             </div>
           </>
