@@ -9,9 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ShopsRouteImport } from './routes/shops'
 import { Route as PressFitRouteImport } from './routes/press-fit'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ShopsRoute = ShopsRouteImport.update({
+  id: '/shops',
+  path: '/shops',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PressFitRoute = PressFitRouteImport.update({
   id: '/press-fit',
   path: '/press-fit',
@@ -26,31 +32,42 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/press-fit': typeof PressFitRoute
+  '/shops': typeof ShopsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/press-fit': typeof PressFitRoute
+  '/shops': typeof ShopsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/press-fit': typeof PressFitRoute
+  '/shops': typeof ShopsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/press-fit'
+  fullPaths: '/' | '/press-fit' | '/shops'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/press-fit'
-  id: '__root__' | '/' | '/press-fit'
+  to: '/' | '/press-fit' | '/shops'
+  id: '__root__' | '/' | '/press-fit' | '/shops'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PressFitRoute: typeof PressFitRoute
+  ShopsRoute: typeof ShopsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/shops': {
+      id: '/shops'
+      path: '/shops'
+      fullPath: '/shops'
+      preLoaderRoute: typeof ShopsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/press-fit': {
       id: '/press-fit'
       path: '/press-fit'
@@ -71,6 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PressFitRoute: PressFitRoute,
+  ShopsRoute: ShopsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
