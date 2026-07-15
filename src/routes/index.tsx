@@ -76,6 +76,7 @@ function IsoFitPage() {
             <Link to="/" className="font-mono text-[11px] tracking-[0.15em] uppercase text-[#D2042D]">ISO FIT</Link>
             <Link to="/press-fit" className="font-mono text-[11px] tracking-[0.15em] uppercase text-[rgba(225,225,225,0.8)] hover:text-[#D2042D]">PRESS FIT</Link>
             <Link to="/shops" className="font-mono text-[11px] tracking-[0.15em] uppercase text-[rgba(225,225,225,0.8)] hover:text-[#D2042D]">SHOP MAP</Link>
+            <Link to="/field-notes" className="font-mono text-[11px] tracking-[0.15em] uppercase text-[rgba(225,225,225,0.8)] hover:text-[#D2042D]">FIELD NOTES</Link>
           </nav>
         </div>
       </header>
