@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ShopsRouteImport } from './routes/shops'
 import { Route as PressFitRouteImport } from './routes/press-fit'
+import { Route as FieldNotesRouteImport } from './routes/field-notes'
 import { Route as IndexRouteImport } from './routes/index'
 
 const ShopsRoute = ShopsRouteImport.update({
@@ -23,6 +24,11 @@ const PressFitRoute = PressFitRouteImport.update({
   path: '/press-fit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FieldNotesRoute = FieldNotesRouteImport.update({
+  id: '/field-notes',
+  path: '/field-notes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,30 +37,34 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/field-notes': typeof FieldNotesRoute
   '/press-fit': typeof PressFitRoute
   '/shops': typeof ShopsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/field-notes': typeof FieldNotesRoute
   '/press-fit': typeof PressFitRoute
   '/shops': typeof ShopsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/field-notes': typeof FieldNotesRoute
   '/press-fit': typeof PressFitRoute
   '/shops': typeof ShopsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/press-fit' | '/shops'
+  fullPaths: '/' | '/field-notes' | '/press-fit' | '/shops'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/press-fit' | '/shops'
-  id: '__root__' | '/' | '/press-fit' | '/shops'
+  to: '/' | '/field-notes' | '/press-fit' | '/shops'
+  id: '__root__' | '/' | '/field-notes' | '/press-fit' | '/shops'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FieldNotesRoute: typeof FieldNotesRoute
   PressFitRoute: typeof PressFitRoute
   ShopsRoute: typeof ShopsRoute
 }
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PressFitRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/field-notes': {
+      id: '/field-notes'
+      path: '/field-notes'
+      fullPath: '/field-notes'
+      preLoaderRoute: typeof FieldNotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,19 +104,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FieldNotesRoute: FieldNotesRoute,
   PressFitRoute: PressFitRoute,
   ShopsRoute: ShopsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
