@@ -103,48 +103,56 @@ function FieldNotesPage() {
         <h2 className={`${HEADER} text-xs mb-8 text-[rgba(225,225,225,0.6)]`}>
           {String(visible.length).padStart(2, "0")} / ENTRIES
         </h2>
-        <ul className="divide-y divide-[rgba(225,225,225,0.3)]">
-          {visible.map((n) => {
-            const open = openId === n.id;
-            return (
-              <li key={n.id} className="py-8">
-                <button
-                  onClick={() => setOpenId(open ? null : n.id)}
-                  className="w-full text-left group"
-                >
-                  <div className="grid grid-cols-1 sm:grid-cols-[120px_minmax(0,1fr)_auto] gap-3 sm:gap-6 items-baseline">
-                    <div className="font-mono text-[10px] tracking-[0.15em] uppercase text-[rgba(225,225,225,0.5)]">
-                      {new Date(n.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "2-digit" }).toUpperCase()}
-                    </div>
-                    <div>
-                      <div className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#D2042D] mb-2">
-                        {n.category}
+        {visible.length === 0 ? (
+          <div className="border border-[rgba(225,225,225,0.3)] p-8 sm:p-12">
+            <p className="font-mono text-[11px] tracking-[0.15em] uppercase text-[rgba(225,225,225,0.6)]">
+              NO ENTRIES YET — CHECK BACK SOON.
+            </p>
+          </div>
+        ) : (
+          <ul className="divide-y divide-[rgba(225,225,225,0.3)]">
+            {visible.map((n) => {
+              const open = openId === n.id;
+              return (
+                <li key={n.id} className="py-8">
+                  <button
+                    onClick={() => setOpenId(open ? null : n.id)}
+                    className="w-full text-left group"
+                  >
+                    <div className="grid grid-cols-1 sm:grid-cols-[120px_minmax(0,1fr)_auto] gap-3 sm:gap-6 items-baseline">
+                      <div className="font-mono text-[10px] tracking-[0.15em] uppercase text-[rgba(225,225,225,0.5)]">
+                        {new Date(n.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "2-digit" }).toUpperCase()}
                       </div>
-                      <h3 className="font-sans font-bold tracking-[0.02em] text-xl sm:text-2xl group-hover:text-[#D2042D] transition-colors">
-                        {n.title}
-                      </h3>
-                      <p className="mt-3 text-sm sm:text-base text-[rgba(225,225,225,0.75)] leading-relaxed">
-                        {n.excerpt}
-                      </p>
+                      <div>
+                        <div className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#D2042D] mb-2">
+                          {n.category}
+                        </div>
+                        <h3 className="font-sans font-bold tracking-[0.02em] text-xl sm:text-2xl group-hover:text-[#D2042D] transition-colors">
+                          {n.title}
+                        </h3>
+                        <p className="mt-3 text-sm sm:text-base text-[rgba(225,225,225,0.75)] leading-relaxed">
+                          {n.excerpt}
+                        </p>
+                      </div>
+                      <div className="font-mono text-[10px] tracking-[0.15em] uppercase text-[rgba(225,225,225,0.5)] whitespace-nowrap">
+                        {n.readTime} · {open ? "CLOSE −" : "READ +"}
+                      </div>
                     </div>
-                    <div className="font-mono text-[10px] tracking-[0.15em] uppercase text-[rgba(225,225,225,0.5)] whitespace-nowrap">
-                      {n.readTime} · {open ? "CLOSE −" : "READ +"}
+                  </button>
+                  {open && (
+                    <div className="mt-6 sm:ml-[144px] max-w-2xl space-y-4">
+                      {n.body.map((p, i) => (
+                        <p key={i} className="text-sm sm:text-base text-[rgba(225,225,225,0.9)] leading-relaxed">
+                          {p}
+                        </p>
+                      ))}
                     </div>
-                  </div>
-                </button>
-                {open && (
-                  <div className="mt-6 sm:ml-[144px] max-w-2xl space-y-4">
-                    {n.body.map((p, i) => (
-                      <p key={i} className="text-sm sm:text-base text-[rgba(225,225,225,0.9)] leading-relaxed">
-                        {p}
-                      </p>
-                    ))}
-                  </div>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </section>
 
       {/* Footer */}
